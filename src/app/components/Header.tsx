@@ -1,9 +1,20 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { AppHeader } from "@dynatrace/strato-components-preview";
+import { Dropdown } from "src/itcorpo/shared/dropdown/Dropdown";
+
+const items = {
+  'PL': "Poland",
+  "LT": "Lithuania",
+  "LV": "Latvia"
+}
 
 export const Header = () => {
-  return (
+  const countryChange = (country: string) => {
+    console.log(country)
+  }
+
+  return (<>
     <AppHeader>
       <AppHeader.NavItems>
         <AppHeader.AppNavLink as={Link} to="/" />
@@ -27,5 +38,6 @@ export const Header = () => {
         </AppHeader.NavItem>
       </AppHeader.NavItems>
     </AppHeader>
-  );
+    <Dropdown items={items} onChanged={countryChange}></Dropdown>
+  </>);
 };

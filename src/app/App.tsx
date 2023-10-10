@@ -10,6 +10,7 @@ import { OfficesPage } from "src/itcorpo/pages/offices/OfficesPage";
 import { ProjectsPage } from "src/itcorpo/pages/projects/ProjectsPage";
 import { EmployeesPage } from "src/itcorpo/pages/employees/EmployeesPage";
 import { BenefitsPage } from "src/itcorpo/pages/benefits/BenefitsPage";
+import { FadeBox } from "src/itcorpo/shared/fadebox/Fadebox";
 
 export const App = () => {
   return (
@@ -27,6 +28,9 @@ export const App = () => {
           <Route path="/employees" element={<EmployeesPage label="IT Corpo Employees" />} />
           <Route path="/benefits" element={<BenefitsPage label="IT Corpo Benefits" />} />
         </Routes>
+        <FadeBox>
+          notification message goes here
+        </FadeBox>
       </Page.Main>
     </Page>
   );
