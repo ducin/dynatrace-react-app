@@ -9,6 +9,9 @@ const config: CliOptions = {
     id: 'my.dt.playground',
     scopes: [{ name: 'storage:logs:read', comment: 'default template' }, { name: 'storage:buckets:read', comment: 'default template' }]
   },
+  server: {
+    enableCSP: false,
+  }
 };
 
 module.exports = config;

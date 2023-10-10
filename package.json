@@ -27,7 +27,11 @@
     "@dynatrace/strato-components-preview": "0.104.0",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-router-dom": "^6.4.1"
+    "react-router-dom": "^6.4.1",
+    "axios": "0.27.2",
+    "classnames": "^2.3.2",
+    "currency.js": "^2.0.4",
+    "react-loader-spinner": "^5.3.4"
   },
   "devDependencies": {
     "dt-app": "0.107.4",

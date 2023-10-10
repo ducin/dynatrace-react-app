@@ -9,6 +9,8 @@
   "plugins": ["@typescript-eslint", "react-hooks", "@microsoft/eslint-plugin-sdl", "no-secrets"],
   "extends": ["plugin:react/recommended", "plugin:@typescript-eslint/recommended", "plugin:@microsoft/eslint-plugin-sdl/recommended", "plugin:@microsoft/eslint-plugin-sdl/react"],
   "rules": {
+    "react/react-in-jsx-scope": "off",
+    
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "react/no-unescaped-entities": "off",
