@@ -20,15 +20,6 @@ const useEmployeeState = () => {
   return useState<Employee[]>([])
 }
 
-// REASON FOR COMPONENTS TO RENDER (VDOM)
-// - (1) my own state change
-// - (2) DEFAULT: if my parent RENDERS and I'm a part of my parent, I shall render as well
-//   - props change - MYTH 
-//   - optimization: memo - when the props are THE SAME, ddon't rerender
-// - (3) context value change (e.g. redux, react-query, etc)
-
-// PERFROMANCE OPTIMIZATION 
-// - keep state as low as possible
 
 export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // memory cell: READ, WRITE
@@ -52,6 +43,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   }, []) // ngOnChanges
 
   const onEmployeeBenefitClicked = (e: Employee) => {
+    // there is some logic
     console.log('🍕', e)
   }
 
@@ -67,6 +59,9 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     setSidebarCollapsed(collapsed => !collapsed)
   }
 
+  // 37.2 - total (my own nodes + child components)
+  // 2.4 - my own nodes ONLY
+  // 34.8 - child components ONLY
   // REACT FRAGMENT (VDOM) - NOTHING in DOM
   const node = (<>
     <h2>{props.label}</h2>
@@ -82,7 +77,11 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     count: {employees.length}
     {` `}
     ({to2(completedRate * 100)} %)
-    <AdditionalCosts employees={employees} />
+    <AdditionalCosts
+      employees={employees}
+      label={<h2>Additional Costs</h2>}
+      // label={React.createElement('h2', {}, 'Additional Costs')}
+    />
     {employees &&
       <ol>
       {employees.map(e =>
