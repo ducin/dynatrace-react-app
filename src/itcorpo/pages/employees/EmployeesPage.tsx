@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react'
+import React, { ReactNode, useDebugValue, useEffect, useState } from 'react'
 
 import { to2 } from '../../utils/math';
 
@@ -8,30 +8,48 @@ import { getEmployees } from '../../api/EmployeeApi';
 
 import { Loader } from '../../shared/Loader';
 import { Sidebar } from '../../shared/sidebar/Sidebar';
-import { CurrencyFormat } from '../../shared/CurrencyFormat';
+import { AdditionalCosts } from './AdditionalCosts';
 
 type EmployeesPageProps = {
   label: string
   header?: ReactNode
 }
 
+const useEmployeeState = () => {
+  useDebugValue(`the weather is ${Math.random() > 0.5 ? 'fine' : 'awful'} today`)
+  return useState<Employee[]>([])
+}
+
+// REASON FOR COMPONENTS TO RENDER (VDOM)
+// - (1) my own state change
+// - (2) DEFAULT: if my parent RENDERS and I'm a part of my parent, I shall render as well
+//   - props change - MYTH 
+//   - optimization: memo - when the props are THE SAME, ddon't rerender
+// - (3) context value change (e.g. redux, react-query, etc)
+
+// PERFROMANCE OPTIMIZATION 
+// - keep state as low as possible
+
 export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
-  const [employees, setEmployees] = useState<Employee[]>([])
+  // memory cell: READ, WRITE
+  // const [employees, setEmployees] = useState<Employee[]>([])
+  const [employees, setEmployees] = useEmployeeState()
   const [isLoading, setLoading] = useState(true)
   const [completedRate, setCompletedRate] = useState(0)
-  const [displayAdditionalSummaries, setDisplayAdditionalSummaries] = useState(false)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   // implement "reload" button
 
   useEffect(() => {
-    getEmployees()
+    // ngOnInit
+    getEmployees() // HTTP GET
       .then((employees) => {
         setEmployees(employees)
         setLoading(false)
         setCompletedRate(1)
       })
-  }, [])
+    return () => {} // a cleanup function // ngOnDestroy
+  }, []) // ngOnChanges
 
   const onEmployeeBenefitClicked = (e: Employee) => {
     console.log('🍕', e)
@@ -45,19 +63,12 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     console.log('💰', e)
   }
 
-  const calculateTotalSalary = () => {
-    return employees.reduce((sum, e) => sum + e.salary, 0)
-  }
-
-  const toggleDisplayAdditionalSummaries = () => {
-    setDisplayAdditionalSummaries(display => !display)
-  }
-
   const toggleSidebarCollapsed = () => {
     setSidebarCollapsed(collapsed => !collapsed)
   }
 
-  return <>
+  // REACT FRAGMENT (VDOM) - NOTHING in DOM
+  const node = (<>
     <h2>{props.label}</h2>
     <Sidebar
       collapsed={sidebarCollapsed}
@@ -71,18 +82,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     count: {employees.length}
     {` `}
     ({to2(completedRate * 100)} %)
-    <input id="displaySummary" type="checkbox" onClick={toggleDisplayAdditionalSummaries} />
-    <label htmlFor="displaySummary">display additional costs</label>
-    <ul>
-      <li>monthly salary cost: {` `}
-        <CurrencyFormat value={calculateTotalSalary()} /></li>
-      {displayAdditionalSummaries && <>
-        <li>quarterly salary cost: {` `}
-          <CurrencyFormat value={calculateTotalSalary() * 3} /></li>
-        <li>yearly salary cost: {` `}
-          <CurrencyFormat value={calculateTotalSalary() * 12} /></li>
-      </>}
-    </ul>
+    <AdditionalCosts employees={employees} />
     {employees &&
       <ol>
       {employees.map(e =>
@@ -93,5 +93,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
         /></li>)}
       </ol>
     }
-  </>
+  </>)
+  console.log(node)
+  return node
 }

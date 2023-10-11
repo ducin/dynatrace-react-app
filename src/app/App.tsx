@@ -12,8 +12,9 @@ import { EmployeesPage } from "src/itcorpo/pages/employees/EmployeesPage";
 import { BenefitsPage } from "src/itcorpo/pages/benefits/BenefitsPage";
 import { FadeBox } from "src/itcorpo/shared/fadebox/Fadebox";
 
+// FP
 export const App = () => {
-  return (
+  const node = (
     <Page>
       <Page.Header>
         <Header />
@@ -34,4 +35,6 @@ export const App = () => {
       </Page.Main>
     </Page>
   );
+  console.log(node)
+  return node
 };
