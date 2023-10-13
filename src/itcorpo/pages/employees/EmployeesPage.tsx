@@ -20,14 +20,42 @@ const useEmployeeState = () => {
   return useState<Employee[]>([])
 }
 
+const useForceRender = () => {
+  // private API
+  const [count, setCount] = useState(0)
+  const forceRender = () => setCount(count + 1)
+  // public API
+  return forceRender
+}
+// === // Object.is
+
+
+
+// with a custom hook, DEVTOOLS are going to reflect that thing (State Wrapped)
+function useStateWrapped <T>(initial){
+  return useState<T>(initial)
+}
+
+// RULES OF HOOKS:
+// you can call the hook (1) inside the component, (2) inside custom hooks
+// you gotta call hooks in EXACT SAME ORDER on every render
+// const [isLoading, setLoading] = useState(true)
 
 export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // memory cell: READ, WRITE
   // const [employees, setEmployees] = useState<Employee[]>([])
-  const [employees, setEmployees] = useEmployeeState()
-  const [isLoading, setLoading] = useState(true)
+
+  const [employees, setEmployees] = useState<Employee[]>([])
+  // I DEPEND on the state
+  // CREATE STATE (1st render), GET EXISTING STATE (other renders)
+  // if (Math.random() > 0.5) {
+  const [isLoading, setLoading] = useState(true) // REACTIVITY model
+  // }
   const [completedRate, setCompletedRate] = useState(0)
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+
+  // const forceRender = useForceRender()
+  // forceRender()
 
   // implement "reload" button
 

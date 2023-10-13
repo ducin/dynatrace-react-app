@@ -33,16 +33,39 @@ interface AdditionalCostsProps_ {
 // DECLARATION, nouns FP
 // JS - mixed-lang. - FP + OOP // prettier
 
+// const useToggle = (???) => {
+//   // private API
+//   ???
+//   // public API
+//   return ???
+// }
+
+const useToggle = (init = false) => {
+  // private API
+  const [value, setValue] = useState(init);
+  const toggleValue = () => {
+    setValue((prev) => !prev);
+  }
+  // public API
+  return [ value, toggleValue ] as const
+  // return { value, toggleValue }
+}
+
 export const AdditionalCosts: React.FC<AdditionalCostsProps> =
 memo((props) => {
   const { employees, label } = props
 
-  const [displayAdditionalSummaries, setDisplayAdditionalSummaries] = useState(false)
+  const [displayAdditionalSummaries, toggleDisplayAdditionalSummaries] = useToggle()
+  // const {
+  //   value: displayAdditionalSummaries,
+  //   toggleValue: setDisplayAdditionalSummaries
+  // } = useToggle()
+  // const [displayAdditionalSummaries, setDisplayAdditionalSummaries] = useState(false)
 
-  // useCallback - makes sense as FUTURE PROOF idea
-  const toggleDisplayAdditionalSummaries = () => { // void => side effect
-    setDisplayAdditionalSummaries(display => !display)
-  }
+  // // useCallback - makes sense as FUTURE PROOF idea
+  // const toggleDisplayAdditionalSummaries = () => { // void => side effect
+  //   setDisplayAdditionalSummaries(display => !display)
+  // }
 
   // useMemo - keep stable REFERENCES // REFERENTIAL EQUALITY
   // const flags = useMemo(() => ({
@@ -59,6 +82,7 @@ memo((props) => {
   // const totalSalary = calculateTotalSalary()
   // const totalSalary = employees.reduce((sum, e) => sum + e.salary, 0)
 
+  // React.Fragment
   return <>
     {/* <h2>Additional Costs</h2> */}
     {label}
@@ -79,6 +103,7 @@ memo((props) => {
         <li>yearly salary cost: {` `}
           <CurrencyFormat value={totalSalary * 12} /></li>
       </>}
+
     </ul>
   </>
 })
