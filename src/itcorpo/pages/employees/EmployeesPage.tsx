@@ -15,7 +15,7 @@ type EmployeesPageProps = {
   header?: ReactNode
 }
 
-const useEmployeeState = () => {
+const useEmployeeState__ = () => {
   useDebugValue(`the weather is ${Math.random() > 0.5 ? 'fine' : 'awful'} today`)
   return useState<Employee[]>([])
 }
@@ -41,9 +41,9 @@ function useStateWrapped <T>(initial){
 // you gotta call hooks in EXACT SAME ORDER on every render
 // const [isLoading, setLoading] = useState(true)
 
-export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
-  // memory cell: READ, WRITE
-  // const [employees, setEmployees] = useState<Employee[]>([])
+function useEmployeesState() {
+  // const [ bigState, setBigState ] = useState({ isLoading: true, employees: [], completedRate: 0 })
+  // setBigState(prev => ({ ...prev, isLoading: true })
 
   const [employees, setEmployees] = useState<Employee[]>([])
   // I DEPEND on the state
@@ -52,23 +52,45 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   const [isLoading, setLoading] = useState(true) // REACTIVITY model
   // }
   const [completedRate, setCompletedRate] = useState(0)
+
+  const reload = () => {
+    getEmployees() // HTTP GET
+      .then((employees) => {
+        // it should be batched, and it is in v18
+        setEmployees(employees)
+        setLoading(false)
+        setCompletedRate(1)
+      })
+    const cleanup = () => {
+      // AbortController.abort()
+    } // a cleanup function // ngOnDestroy
+    return cleanup
+  }
+
+  useEffect(() => {
+    // ngOnInit
+    return reload()
+  }, []) // ngOnChanges
+
+  return { employees, isLoading, completedRate, reload }
+}
+
+export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
+
+  // const employeesData: Employee [] = [{
+  //   salary: 12000,
+  //   skills
+  // }] as Employee[]
+  // memory cell: READ, WRITE
+  // const [employees, setEmployees] = useState<Employee[]>([])
+
+  const { employees, isLoading, completedRate, reload } = useEmployeesState()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   // const forceRender = useForceRender()
   // forceRender()
 
   // implement "reload" button
-
-  useEffect(() => {
-    // ngOnInit
-    getEmployees() // HTTP GET
-      .then((employees) => {
-        setEmployees(employees)
-        setLoading(false)
-        setCompletedRate(1)
-      })
-    return () => {} // a cleanup function // ngOnDestroy
-  }, []) // ngOnChanges
 
   const onEmployeeBenefitClicked = (e: Employee) => {
     // there is some logic
@@ -100,6 +122,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     </Sidebar>
     {/* <RoundButton onClick={this.toggleSidebarCollapsed} /> */}
     <span className="icon" role="img" aria-label="toggle sidebar" onClick={toggleSidebarCollapsed}>📖</span>
+    <button onClick={reload}>reload</button>
 
     {isLoading && <Loader />}
     count: {employees.length}
