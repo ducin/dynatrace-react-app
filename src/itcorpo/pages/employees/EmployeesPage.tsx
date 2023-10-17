@@ -1,4 +1,4 @@
-import React, { ReactNode, useDebugValue, useEffect, useState } from 'react'
+import React, { ReactNode, useCallback, useDebugValue, useEffect, useState } from 'react'
 
 import { to2 } from '../../utils/math';
 
@@ -45,21 +45,34 @@ function useEmployeesState() {
   // const [ bigState, setBigState ] = useState({ isLoading: true, employees: [], completedRate: 0 })
   // setBigState(prev => ({ ...prev, isLoading: true })
 
-  const [employees, setEmployees] = useState<Employee[]>([])
+  const [employees, setEmployees] = useState<Employee[]>([]) // 3
   // I DEPEND on the state
+  // PRIMIVIVE OBSESSION
   // CREATE STATE (1st render), GET EXISTING STATE (other renders)
   // if (Math.random() > 0.5) {
-  const [isLoading, setLoading] = useState(true) // REACTIVITY model
+  const [isLoading, setLoading] = useState(true) // REACTIVITY model // 2
+  const [hasError, setError] = useState<Error>() // 2
   // }
+  // in total: 12
+  // VALID: 4
+  // STATE MACHINE
   const [completedRate, setCompletedRate] = useState(0)
 
   const reload = () => {
+    // depending on UX: reset Employees OR NOT?
+    setError(undefined)
+    setLoading(true)
     getEmployees() // HTTP GET
       .then((employees) => {
         // it should be batched, and it is in v18
         setEmployees(employees)
-        setLoading(false)
         setCompletedRate(1)
+      })
+      .catch((error) => {
+        setError(error)
+      })
+      .finally(() => {
+        setLoading(false)
       })
     const cleanup = () => {
       // AbortController.abort()
@@ -75,6 +88,11 @@ function useEmployeesState() {
   return { employees, isLoading, completedRate, reload }
 }
 
+// 1. provide an input/text
+// 2. whatever text is changed, adjust the employee subset to be displayed
+// part 2: server-side filtering:
+// 3. take zis: http://localhost:3005/employees?email_like=ber
+
 export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
 
   // const employeesData: Employee [] = [{
@@ -86,24 +104,25 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
 
   const { employees, isLoading, completedRate, reload } = useEmployeesState()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [nameFilter, setNameFilter] = useState('')
 
   // const forceRender = useForceRender()
   // forceRender()
 
   // implement "reload" button
 
-  const onEmployeeBenefitClicked = (e: Employee) => {
+  const onEmployeeBenefitClicked = useCallback((e: Employee) => {
     // there is some logic
     console.log('🍕', e)
-  }
+  }, [])
 
-  const onEmployeeDeleted = (e: Employee) => {
+  const onEmployeeDeleted = useCallback((e: Employee) => {
     console.log('☠️️️', e)
-  }
+  }, [])
 
-  const onEmployeeMoneyBumped = (e: Employee) => {
+  const onEmployeeMoneyBumped = useCallback((e: Employee) => {
     console.log('💰', e)
-  }
+  }, [])
 
   const toggleSidebarCollapsed = () => {
     setSidebarCollapsed(collapsed => !collapsed)
@@ -128,6 +147,12 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     count: {employees.length}
     {` `}
     ({to2(completedRate * 100)} %)
+    <input
+      type='text'
+      placeholder='employee e-mail'
+      value={nameFilter}
+      onChange={e => setNameFilter(e.target.value)}
+    />
     <AdditionalCosts
       employees={employees}
       label={<h2>Additional Costs</h2>}

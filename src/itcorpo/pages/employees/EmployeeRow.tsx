@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Employee } from '../../api/dto'
 
 import { EmployeeThumbnailImage } from './EmployeeImage'
@@ -12,7 +12,7 @@ type EmployeeRowProps = {
 }
 
 export const EmployeeRow =
-  ({ employee: e, onBenefitClick, onDeleteClick, onMoneyClick }: EmployeeRowProps) => <div>
+  memo(({ employee: e, onBenefitClick, onDeleteClick, onMoneyClick }: EmployeeRowProps) => <div>
     <EmployeeThumbnailImage employee={e} />
     {e.firstName} {e.lastName},
     {` `}
@@ -30,4 +30,6 @@ export const EmployeeRow =
         <span role="img" aria-label="money">💰</span>
       </button>
     </div>
-  </div>
+  </div>)
+
+EmployeeRow.displayName = 'EmployeeRow'
