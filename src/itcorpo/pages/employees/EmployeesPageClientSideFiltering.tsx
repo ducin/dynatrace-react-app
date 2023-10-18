@@ -118,6 +118,9 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // raw filter state - updated instantly
   // debounced state -> what our useMemo depends on
 
+  // useMemo is used (IN PRACTICE):
+  // most often - for caching object references
+  // less often - for caching calculation
   // const sorting = {
   //   'name': 'asc',
   //   'age': 'desc',
