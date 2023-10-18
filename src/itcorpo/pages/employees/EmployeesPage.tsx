@@ -49,7 +49,7 @@ function useStateWrapped <T>(initial){
 // - provide the collection data (and load it)
 // - filtering the collection whenever the filter changes (and refreshing)
 function useEmployeesState() {
-  const { employees, isLoading, error, reload } = useEmployeesCollectionData()
+  const { collectionState, reload } = useEmployeesCollectionData()
   const [allFilters, applyFilter] = useEmployeeFilters()
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function useEmployeesState() {
   }, [allFilters, reload])
 
   // there's no reason to make this reference stable (with useMemo)
-  return { employees, isLoading, error, reload, applyFilter, allFilters }
+  return { collectionState, reload, applyFilter, allFilters }
 }
 
 // 1. provide an input/text
@@ -74,7 +74,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // memory cell: READ, WRITE
   // const [employees, setEmployees] = useState<Employee[]>([])
 
-  const { employees, isLoading, error, reload, applyFilter, allFilters } = useEmployeesState()
+  const { collectionState, reload, applyFilter, allFilters } = useEmployeesState()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   // implement "reload" button
@@ -111,30 +111,33 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     <span className="icon" role="img" aria-label="toggle sidebar" onClick={toggleSidebarCollapsed}>📖</span>
     <button onClick={() => reload(allFilters)}>reload</button>
 
-    {isLoading && <Loader />}
-    {error && <span>Something went completely wrong: {error.message}...</span>}
-    count: {employees.length}
-    {` `}
+    {collectionState.state === 'LOADING' && <Loader />}
+    {collectionState.state === 'ERROR' && <span>Something went completely wrong: {collectionState.error.message}...</span>}
     <input
       type='text'
       placeholder='employee e-mail'
       value={allFilters.email}
       onChange={e => applyFilter({ type: "SET_EMAIL", value: e.target.value })}
     />
-    <AdditionalCosts
-      employees={employees}
-      label={<h2>Additional Costs</h2>}
-      // label={React.createElement('h2', {}, 'Additional Costs')}
-    />
-    {employees &&
+
+    {collectionState.state === 'RESULT' &&
+    <>
+      Bertrams: {collectionState.filter(e => e.firstName.includes('Bertram')).length}
+      count: {collectionState.state.length}
+      <AdditionalCosts
+        employees={collectionState.result}
+        label={<h2>Additional Costs</h2>}
+        // label={React.createElement('h2', {}, 'Additional Costs')}
+      />
       <ol>
-      {employees.map(e =>
+      {collectionState.result.map(e =>
         <li key={e.id}><EmployeeRow employee={e}
           onBenefitClick={onEmployeeBenefitClicked}
           onDeleteClick={onEmployeeDeleted}
           onMoneyClick={onEmployeeMoneyBumped}  
         /></li>)}
       </ol>
+    </>
     }
   </>)
   console.log(node)
