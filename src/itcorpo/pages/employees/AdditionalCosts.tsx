@@ -4,6 +4,7 @@
 import React, { memo, useMemo, useState } from 'react';
 import { CurrencyFormat } from '../../shared/CurrencyFormat';
 import { Employee } from 'src/itcorpo/api/dto';
+import { useToggle } from 'src/itcorpo/shared/hooks/useToggle';
 
 // if you have to scroll up to see your props
 // MOST probably your component is too big and it's doing to many things
@@ -39,17 +40,6 @@ interface AdditionalCostsProps_ {
 //   // public API
 //   return ???
 // }
-
-const useToggle = (init = false) => {
-  // private API
-  const [value, setValue] = useState(init);
-  const toggleValue = () => {
-    setValue((prev) => !prev);
-  }
-  // public API
-  return [ value, toggleValue ] as const
-  // return { value, toggleValue }
-}
 
 export const AdditionalCosts: React.FC<AdditionalCostsProps> =
 memo((props) => {

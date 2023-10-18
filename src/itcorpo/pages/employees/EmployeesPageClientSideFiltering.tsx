@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useDebugValue, useEffect, useMemo, useReducer, useState } from 'react'
+import React, { ReactNode, useCallback, useDebugValue, useEffect, useMemo, useState } from 'react'
 import { debounce } from 'lodash'
 
 import { to2 } from '../../utils/math';
@@ -59,11 +59,11 @@ function useEmployeesState() {
   // STATE MACHINE
   const [completedRate, setCompletedRate] = useState(0)
 
-  const reload = (filters: { email: string }) => {
+  const reload = () => {
     // depending on UX: reset Employees OR NOT?
     setError(undefined)
     setLoading(true)
-    const { promise, controller } = getEmployees(filters) // HTTP GET
+    const { promise, controller } = getEmployees() // HTTP GET
     promise
       .then((employees) => {
         // it should be batched, and it is in v18
@@ -82,40 +82,12 @@ function useEmployeesState() {
     return cleanup
   }
 
-  // 1. separate useStates - the worst - passing lots of values and callbacks
-  // const [emailFilter, setEmailFilter] = useState('')
-  // const [ageFilter, setAgeFilter] = useState('')
-  // const [skillsFilter, setSkillsFilter] = useState('')
-  
-  // 2. 1 useState with an object - okayish
-  // const [allFilters, setAllFilter] = useState({ email: '', age: '', skills: '' })
-  // DIRECT UPDATES - I need to know the HOW
-  // component level: setAllFilters(previous => ({ ...previous, skills }))
-  
-
-  // 3. 1 useReducer
-  // { type: "SET_EMAIL", value: string }
-  const [allFilters, applyFilter] = useReducer((state: { email: string }, action: { type: "SET_EMAIL", value: string }) => { 
-    switch (action.type){
-      case 'SET_EMAIL': return {...state, email: action.value}
-      default: return state
-    }
-  }, { email: '' })
-  // 12:05
-  // INDIRECT UPDATES -> the reducers needs to know the HOW
-  // component level: updateFilters({ type: 'SKILLS', value: skills })
-
-  // useState -> specialized useReducer
-
-
-  // SERVER SIDE FILTERING
   useEffect(() => {
     // ngOnInit
-    return reload(allFilters)
-  }, [allFilters]) // ngOnChanges
+    return reload()
+  }, []) // ngOnChanges
 
-  // there's no reason to make this reference stable (with useMemo)
-  return { employees, isLoading, completedRate, reload, applyFilter, allFilters }
+  return { employees, isLoading, completedRate, reload }
 }
 
 // 1. provide an input/text
@@ -132,8 +104,35 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // memory cell: READ, WRITE
   // const [employees, setEmployees] = useState<Employee[]>([])
 
-  const { employees, isLoading, completedRate, reload, applyFilter, allFilters } = useEmployeesState()
+  const { employees, isLoading, completedRate, reload } = useEmployeesState()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
+  const [nameFilter, setNameFilter] = useState('')
+  const [debouncedNameFilter, setDebouncedNameFilter] = useState('')
+  // const debounced = debounce(setNameFilterImmediately, 500)
+  // TODO: React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead.
+  const debouncedSetNameFilter = useCallback(debounce(setDebouncedNameFilter, 500), [])
+  useEffect(() => {
+    debouncedSetNameFilter(nameFilter)
+  }, [nameFilter, debouncedSetNameFilter])
+
+  // raw filter state - updated instantly
+  // debounced state -> what our useMemo depends on
+
+  // const sorting = {
+  //   'name': 'asc',
+  //   'age': 'desc',
+  // }
+  // useCallback -> useMemo(fn)
+
+  // filtering run each time
+  const filteredEmployees__ = employees.filter(e => e.email.includes(nameFilter))
+  // filtering run each time
+  const filteredEmployees = useMemo(() =>
+    employees.filter(e => e.email.toLowerCase().includes(debouncedNameFilter.toLowerCase())),
+  [employees, debouncedNameFilter])
+
+  // const forceRender = useForceRender()
+  // forceRender()
 
   // implement "reload" button
 
@@ -167,26 +166,26 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     </Sidebar>
     {/* <RoundButton onClick={this.toggleSidebarCollapsed} /> */}
     <span className="icon" role="img" aria-label="toggle sidebar" onClick={toggleSidebarCollapsed}>📖</span>
-    <button onClick={() => reload(allFilters)}>reload</button>
+    <button onClick={reload}>reload</button>
 
     {isLoading && <Loader />}
-    count: {employees.length}
+    count: {filteredEmployees.length}
     {` `}
     ({to2(completedRate * 100)} %)
     <input
       type='text'
       placeholder='employee e-mail'
-      value={allFilters.email}
-      onChange={e => applyFilter({ type: "SET_EMAIL", value: e.target.value })}
+      value={nameFilter}
+      onChange={e => setNameFilter(e.target.value)}
     />
     <AdditionalCosts
-      employees={employees}
+      employees={filteredEmployees}
       label={<h2>Additional Costs</h2>}
       // label={React.createElement('h2', {}, 'Additional Costs')}
     />
-    {employees &&
+    {filteredEmployees &&
       <ol>
-      {employees.map(e =>
+      {filteredEmployees.map(e =>
         <li key={e.id}><EmployeeRow employee={e}
           onBenefitClick={onEmployeeBenefitClicked}
           onDeleteClick={onEmployeeDeleted}
