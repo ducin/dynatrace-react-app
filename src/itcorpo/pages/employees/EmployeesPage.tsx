@@ -123,7 +123,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     {collectionState.state === 'RESULT' &&
     <>
       Bertrams: {collectionState.filter(e => e.firstName.includes('Bertram')).length}
-      count: {collectionState.state.length}
+      count: {collectionState.result.length}
       <AdditionalCosts
         employees={collectionState.result}
         label={<h2>Additional Costs</h2>}

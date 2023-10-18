@@ -17,6 +17,7 @@
     "react/prop-types": "off",
     "no-eval": "error",
     "@typescript-eslint/no-implied-eval": "error",
+    "@typescript-eslint/no-implicit-any-catch": "error",
     "react/no-danger": "warn",
     "react/jsx-no-script-url": "warn",
     "@microsoft/sdl/no-inner-html": "warn",

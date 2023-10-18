@@ -34,3 +34,10 @@ export const getEmployees__ = () => {
   return axios.get<Employee[]>(`${API_URL}/employees`)
     .then(res => res.data)
 }
+
+function hasToBeAnError(error: unknown): asserts error is Error {
+  if (!(error instanceof Error)) {
+    // datadog/sentry/whatever push -> monitoring
+    throw error
+  }
+}

@@ -50,7 +50,7 @@ export function useEmployeesCollectionData() {
         state: "RESULT", result, completedRate: 1,
         filter: (cb) => filterEmployees(cb, result)
       }))
-      .catch(error => setCollectionState({ state: "ERROR", error }))
+      .catch((error) => setCollectionState({ state: "ERROR", error }))
     return () => {
       controller.abort()
     }
