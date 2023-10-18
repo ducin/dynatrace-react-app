@@ -49,7 +49,7 @@ function useStateWrapped <T>(initial){
 // - provide the collection data (and load it)
 // - filtering the collection whenever the filter changes (and refreshing)
 function useEmployeesState() {
-  const { employees, isLoading, hasError, reload } = useEmployeesCollectionData()
+  const { employees, isLoading, error, reload } = useEmployeesCollectionData()
   const [allFilters, applyFilter] = useEmployeeFilters()
 
   useEffect(() => {
@@ -57,7 +57,7 @@ function useEmployeesState() {
   }, [allFilters, reload])
 
   // there's no reason to make this reference stable (with useMemo)
-  return { employees, isLoading, reload, applyFilter, allFilters }
+  return { employees, isLoading, error, reload, applyFilter, allFilters }
 }
 
 // 1. provide an input/text
@@ -74,7 +74,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // memory cell: READ, WRITE
   // const [employees, setEmployees] = useState<Employee[]>([])
 
-  const { employees, isLoading, reload, applyFilter, allFilters } = useEmployeesState()
+  const { employees, isLoading, error, reload, applyFilter, allFilters } = useEmployeesState()
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
 
   // implement "reload" button
@@ -112,6 +112,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     <button onClick={() => reload(allFilters)}>reload</button>
 
     {isLoading && <Loader />}
+    {error && <span>Something went completely wrong: {error.message}...</span>}
     count: {employees.length}
     {` `}
     <input

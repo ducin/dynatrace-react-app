@@ -13,7 +13,7 @@ export function useEmployeesCollectionData() {
   // CREATE STATE (1st render), GET EXISTING STATE (other renders)
   // if (Math.random() > 0.5) {
   const [isLoading, setLoading] = useState(true) // REACTIVITY model // 2
-  const [hasError, setError] = useState<Error>() // 2
+  const [error, setError] = useState<Error>() // 2
   // }
   // in total: 12
   // VALID: 4
@@ -43,5 +43,5 @@ export function useEmployeesCollectionData() {
     return cleanup
   }, [])
 
-  return { employees, isLoading, hasError, reload }
+  return { employees, isLoading, error, reload }
 }
