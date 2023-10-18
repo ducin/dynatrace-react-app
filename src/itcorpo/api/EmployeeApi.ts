@@ -19,7 +19,7 @@ export const getEmployees = (criteria: Partial<FilterCriteria> = {}) => {
     controller,
     promise: fetch(url, { signal }).then(res => res.json()) as Promise<Employee[]>
   }
-  }
+}
   // const queryString = criteria.email ? `?email_like=${criteria.email}` : ''
   // return fetch(`${API_URL}/employees${queryString}`)
   //   .then(res => res.json())

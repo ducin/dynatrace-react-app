@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useDebugValue, useEffect, useMemo, useReducer, useState } from 'react'
+import React, { ReactNode, useCallback, useDebugValue, useEffect, useMemo, useReducer, useState, Reducer } from 'react'
 import { debounce } from 'lodash'
 
 import { to2 } from '../../utils/math';
@@ -10,6 +10,7 @@ import { getEmployees } from '../../api/EmployeeApi';
 import { Loader } from '../../shared/Loader';
 import { Sidebar } from '../../shared/sidebar/Sidebar';
 import { AdditionalCosts } from './AdditionalCosts';
+import { useEmployeeFilters } from './employeeFilters';
 
 type EmployeesPageProps = {
   label: string
@@ -36,6 +37,8 @@ const useForceRender = () => {
 function useStateWrapped <T>(initial){
   return useState<T>(initial)
 }
+
+
 
 // RULES OF HOOKS:
 // you can call the hook (1) inside the component, (2) inside custom hooks
@@ -95,18 +98,12 @@ function useEmployeesState() {
 
   // 3. 1 useReducer
   // { type: "SET_EMAIL", value: string }
-  const [allFilters, applyFilter] = useReducer((state: { email: string }, action: { type: "SET_EMAIL", value: string }) => { 
-    switch (action.type){
-      case 'SET_EMAIL': return {...state, email: action.value}
-      default: return state
-    }
-  }, { email: '' })
-  // 12:05
+
   // INDIRECT UPDATES -> the reducers needs to know the HOW
   // component level: updateFilters({ type: 'SKILLS', value: skills })
 
   // useState -> specialized useReducer
-
+  const [allFilters, applyFilter] = useEmployeeFilters()
 
   // SERVER SIDE FILTERING
   useEffect(() => {
