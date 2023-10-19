@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from "react"
+import React, { createContext, useContext, useMemo, useState } from "react"
 
 // make it PRIVATE
 const Currencies = {
@@ -43,7 +43,7 @@ type CurrencyContextValue = {
   convert(amount: number): number
   // setSelectedCurrencyCode: (code: string) => void // chooseCurrency
   setCurrency(curr: CurrencyCode): void
-  availableCurrencies: CurrencyCode[]
+  availableCurrencies: typeof Currencies
 }
 
 // think of SERVICES (SOA)
@@ -60,14 +60,24 @@ export const CurrencyContext = createContext<CurrencyContextValue | undefined>(u
 // const I18nContext = createContext(null)
 // const ThemeContext = createContext(null)
 
+// what does context change, compared to props drilling
+// what people get WRONG: context is a state management solution
+// context is an alternative TRANSPORT solution (alternative to props drilling)
+
 // context provider - component:
 export const CurrencyProvider: React.FC = (props) => {
   const { children } = props
 
+  const [chosenCurrency, setChosenCurrency] = useState<CurrencyCode>('EUR') //
   const ctxValue = useMemo(() => ({
+    selectedCurrencyCode: chosenCurrency,
+    selectedCurrencySymbol: Currencies[chosenCurrency], // derivative -> redundant useState should NOT be used
+    convert: (amount: number) => amount * exchangeRates[chosenCurrency],
+    setCurrency: setChosenCurrency,
+    availableCurrencies: Currencies,
+  }), [chosenCurrency])
 
-  }), [])
-  return <CurrencyContext.Provider value={ctxValue}> // THE REAL STATE
+  return <CurrencyContext.Provider value={ctxValue}>
     {children}
     {/* <Fadebox /> FIXED CSS position */}
   </CurrencyContext.Provider>
@@ -82,3 +92,8 @@ export const useCurrency = () => {
   // modify ctx
   return ctx
 }
+
+// const useConvertedCurrencyAmount = (amount: number) => {
+//   const { convert, selectedCurrencySymbol } = useCurrency()
+//   return `${convert(amount)}${selectedCurrencySymbol}`
+// }
