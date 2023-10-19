@@ -124,11 +124,17 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     <>
       Bertrams: {collectionState.filter(e => e.firstName.includes('Bertram')).length}
       count: {collectionState.result.length}
+      {/* <AdditionalCosts
+        employees={collectionState.result}
+        // children={<h2>Additional Costs</h2>}
+        children={React.createElement('h2', {}, 'Additional Costs')}
+      /> */}
       <AdditionalCosts
         employees={collectionState.result}
-        label={<h2>Additional Costs</h2>}
         // label={React.createElement('h2', {}, 'Additional Costs')}
-      />
+      >
+        <h2>Additional Costs</h2>
+      </AdditionalCosts>
       <ol>
       {collectionState.result.map(e =>
         <li key={e.id}><EmployeeRow employee={e}

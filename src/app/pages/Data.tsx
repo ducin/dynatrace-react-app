@@ -9,7 +9,7 @@ import {
 } from '@dynatrace/strato-components-preview';
 import * as Colors from '@dynatrace/strato-design-tokens/colors';
 import { ErrorIcon } from '@dynatrace/strato-icons';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useDQLQuery } from '../hooks/useDQLQuery';
 
 export const Data = () => {
@@ -24,6 +24,14 @@ export const Data = () => {
   const { error, result, fetchQuery, queryState, visualRecommendations } =
     useDQLQuery();
 
+
+  useEffect(
+    () => {
+      fetchQuery(initialQuery);
+    },
+    [fetchQuery],
+  );
+
   // useEffect for fetching initialQuery
   // more information on useEffect can be found here: https://reactjs.org/docs/hooks-effect.html
   useEffect(
@@ -31,6 +39,7 @@ export const Data = () => {
       fetchQuery(initialQuery);
     },
     // should only be run on the initial render, so no dependency is necessary
+    // 🚨🚨🚨🚨🚨🚨🚨🚨
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [],
   );

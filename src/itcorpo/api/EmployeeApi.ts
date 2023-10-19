@@ -35,6 +35,7 @@ export const getEmployees__ = () => {
     .then(res => res.data)
 }
 
+// ASSERTION FUNCTION
 function hasToBeAnError(error: unknown): asserts error is Error {
   if (!(error instanceof Error)) {
     // datadog/sentry/whatever push -> monitoring

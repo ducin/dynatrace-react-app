@@ -1,4 +1,5 @@
 import React, { ChangeEvent, useState } from 'react'
+// import { Currencies, CurrencyContext, useCurrency } from '../../providers/Currencies'
 
 type DropdownProps = {
   items: { [key: string]: string }
@@ -6,6 +7,9 @@ type DropdownProps = {
 }
 
 export const Dropdown: React.FC<DropdownProps> = (props) => {
+  // const currency = useContext(CurrencyContext) // WRONG
+  // const currency = useCurrency()
+
   const [value, setValue] = useState('')
   const handleChange = (event: ChangeEvent<HTMLSelectElement>) => {
     const value = (event.target as HTMLSelectElement).value

@@ -14,7 +14,8 @@ interface AdditionalCostsProps {
   // totalSalary: number
   employees: Employee[] // RECOMMENDATION
   // label: string | JSX.Element
-  label: React.ReactNode
+  // label: React.ReactNode
+  children: React.ReactNode
 }
 
 // DEFENSIVE PROGRAMMING
@@ -42,8 +43,9 @@ interface AdditionalCostsProps_ {
 // }
 
 export const AdditionalCosts: React.FC<AdditionalCostsProps> =
+// props are eual has been overriden 🔥
 memo((props) => {
-  const { employees, label } = props
+  const { employees, children } = props
 
   const [displayAdditionalSummaries, toggleDisplayAdditionalSummaries] = useToggle()
   // const {
@@ -75,7 +77,7 @@ memo((props) => {
   // React.Fragment
   return <>
     {/* <h2>Additional Costs</h2> */}
-    {label}
+    {children}
     {/* {React.createElement("input")} */}
     <input
       id="displaySummary"

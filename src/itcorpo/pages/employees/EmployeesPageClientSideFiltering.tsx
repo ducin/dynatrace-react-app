@@ -108,8 +108,11 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true)
   const [nameFilter, setNameFilter] = useState('')
   const [debouncedNameFilter, setDebouncedNameFilter] = useState('')
-  // const debounced = debounce(setNameFilterImmediately, 500)
+  const d = debounce(setNameFilter, 500)
+  const debounced = useCallback(debounce(setNameFilter, 500), [])
   // TODO: React Hook useCallback received a function whose dependencies are unknown. Pass an inline function instead.
+  // ANSWER: https://github.com/facebook/react/issues/19240#issuecomment-652945246
+  // 
   const debouncedSetNameFilter = useCallback(debounce(setDebouncedNameFilter, 500), [])
   useEffect(() => {
     debouncedSetNameFilter(nameFilter)
@@ -137,6 +140,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
   // const forceRender = useForceRender()
   // forceRender()
 
+  const f = () => {} // f instanceof Function
   // implement "reload" button
 
   const onEmployeeBenefitClicked = useCallback((e: Employee) => {
@@ -183,7 +187,7 @@ export const EmployeesPage: React.FC<EmployeesPageProps> = (props) => {
     />
     <AdditionalCosts
       employees={filteredEmployees}
-      label={<h2>Additional Costs</h2>}
+      children={<h2>Additional Costs</h2>}
       // label={React.createElement('h2', {}, 'Additional Costs')}
     />
     {filteredEmployees &&

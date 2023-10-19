@@ -1,6 +1,13 @@
 import { useCallback, useState } from "react"
 import { Employee } from "src/itcorpo/api/dto"
 import { getEmployees } from "src/itcorpo/api/EmployeeApi"
+import { useLogMessage } from "src/itcorpo/shared/hooks/useLogMessage"
+
+function hasToBeAnError(error: unknown): asserts error is Error {
+  if (!(error instanceof Error)) {
+    throw error
+  }
+}
 
 // PRO-TIP: try to AVOID optional properties (?) in your UI model
 
@@ -40,6 +47,7 @@ export function useEmployeesCollectionData() {
   // STATE MACHINE
   // const [completedRate, setCompletedRate] = useState(0)
   const [collectionState, setCollectionState] = useState<CollectionState>({ state: "LOADING" })
+  useLogMessage(`currentState: ${collectionState.state}`)
 
   const reload = useCallback((filters: { email: string }) => {
     // depending on UX: reset Employees OR NOT?
@@ -50,7 +58,10 @@ export function useEmployeesCollectionData() {
         state: "RESULT", result, completedRate: 1,
         filter: (cb) => filterEmployees(cb, result)
       }))
-      .catch((error) => setCollectionState({ state: "ERROR", error }))
+      .catch((error: unknown) => {
+        hasToBeAnError(error)
+        setCollectionState({ state: "ERROR", error })
+      })
     return () => {
       controller.abort()
     }
