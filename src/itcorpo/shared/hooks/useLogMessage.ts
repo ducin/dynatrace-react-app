@@ -7,3 +7,7 @@ export const useLogMessage = (message: string) => {
         console.log(message)
     }, [message])
 }
+
+const useJordi = () => {
+    console.log()
+}

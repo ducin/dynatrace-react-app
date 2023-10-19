@@ -12,6 +12,10 @@ type CurrencyCode = keyof typeof Currencies
 type ValueOf<T> = T[keyof T]
 // make sure ext. -> .tsx
 
+export function isCurrencyCode(code: string): code is CurrencyCode {
+  return Object.keys(Currencies).includes(code)
+}
+
 const exchangeRates: Record<keyof typeof Currencies, number> = {
   USD: 1.2,
   EUR: 1,

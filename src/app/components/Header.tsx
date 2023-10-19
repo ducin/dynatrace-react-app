@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { AppHeader } from "@dynatrace/strato-components-preview";
 import { Dropdown } from "src/itcorpo/shared/dropdown/Dropdown";
+import { CurrencyDropdown } from "src/itcorpo/providers/CurrencyDropdown";
 
 const items = {
   'PL': "Poland",
@@ -39,5 +40,6 @@ export const Header = () => {
       </AppHeader.NavItems>
     </AppHeader>
     <Dropdown items={items} onChanged={countryChange}></Dropdown>
+    <CurrencyDropdown />
   </>);
 };
